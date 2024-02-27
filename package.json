@@ -1,0 +1,20 @@
+{
+  "name": "new-catalog-products-detector",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/jsdom": "^21.1.6"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "antibotbrowser": "^1.0.5",
+    "jsdom": "^24.0.0",
+    "lodash": "^4.17.21",
+    "puppeteer": "^21.11.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  }
+}
