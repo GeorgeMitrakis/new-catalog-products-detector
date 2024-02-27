@@ -1,7 +1,8 @@
 
+import moment from "moment";
 import { DEFAULT_TIME_INTERVAL } from "./app/const";
 import type { ICatalog, IProduct } from "./app/model";
-import { createCatalogObject, getCatalogPage } from "./app/utils";
+import { createCatalogObject, getCatalogPage, isWithinFunctioningHours } from "./app/utils";
 
 const origin = "https://www.spitogatos.gr"
 const url = `${origin}/pwliseis-katoikies/athina-voreia-proastia/timi_eos-200000/emvado_apo-65`;
@@ -11,22 +12,40 @@ const productTitleSelector = ".tile__title";
 const productPriceSelector = ".price__text";
 const productPathnameSelector = ".tile__content  a.tile__link";
 
-// const searchInterval = setInterval(run, DEFAULT_TIME_INTERVAL * 60 * 1000);
+let previousCatalog: IProduct[] = [];
 
-async function run(){
+async function run(){    
+    if(!isWithinFunctioningHours()){
+        console.log("Outside functioning hours. Skipping.")
+        return;
+    }
+
+    const newEntries = await crawlCatalog();
+
+    if(newEntries.length > 0){
+        const date = moment().format("YYYY-MM-DD");
+        const time = moment().format("HH:mm");
+
+
+        console.log(JSON.stringify(newEntries, null, 4));
+        logToFile(newEntries, date, time);
+    }
+}
+
+async function crawlCatalog() {
     const catalogPageHtml = await getCatalogPage(url);
     // const catalogPageHtml = await Bun.file('./test.html').text();
 
     if(!catalogPageHtml){
-        return;
+        return [];
     }
 
-    if(!await Bun.file('./catalog.json').exists()){
-        await Bun.write('./catalog.json', '[]');
-    }
-    const previousCatalog = JSON.parse(await Bun.file('./catalog.json').text());
+    // if(!await Bun.file('./fixtures/catalog.json').exists()){
+    //     await Bun.write('./fixtures/catalog.json', '[]');
+    // }
 
-    // const catalogPage = createElementFromHTML(catalogPageHtml);
+    // previousCatalog = JSON.parse(await Bun.file('./fixtures/catalog.json').text());
+
     const newCatalog = createCatalogObject({
         catalogPageHtml,
         origin,
@@ -37,14 +56,13 @@ async function run(){
     })
 
     // const newCatalog = JSON.parse(await Bun.file('./catalog.json').text());
+    previousCatalog = newCatalog;
 
-    console.log(JSON.stringify(getNewEntries(previousCatalog, newCatalog), null, 4));
+    // await Bun.write('./fixtures/catalog.json', JSON.stringify(newCatalog, null, 4));
+    // await Bun.write('./fixtures/catalog.html', catalogPageHtml);
 
-    await Bun.write('./catalog.json', JSON.stringify(newCatalog, null, 4));
-    await Bun.write('./catalog.html', catalogPageHtml);
+    return getNewEntries(previousCatalog, newCatalog);
 }
-
-await run();
 
 function getNewEntries(source: IProduct[], target: IProduct[]) {
     const sourceLinks = source.map((product) => product.link);
@@ -54,3 +72,22 @@ function getNewEntries(source: IProduct[], target: IProduct[]) {
 
     return target.filter(product => newLinks.includes(product.link));
 }
+
+async function logToFile(products: IProduct[], filename: string, heading: string) {
+    const file = Bun.file(`./logfiles/${filename}.txt`);
+    const writer = file.writer();
+
+    writer.write(`${heading}\n\n`);
+
+    for (const product of products) {
+        writer.write(`${product.name}\n`);
+        writer.write(`${product.price}\n`);
+        writer.write(`${product.link}\n\n`);
+    }
+
+    writer.end();
+}
+
+
+const searchInterval = setInterval(run, DEFAULT_TIME_INTERVAL * 1000);
+run();

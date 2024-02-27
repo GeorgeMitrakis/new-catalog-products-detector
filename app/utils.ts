@@ -1,6 +1,7 @@
 import { Settings } from "./settings";
 import type { IProduct } from "./model";
 import jsdom from "jsdom";
+import moment from "moment";
 const { JSDOM } = jsdom;
 
 export async function getCatalogPage(url: string): Promise<string|null> {
@@ -56,4 +57,14 @@ export function createCatalogObject({
     });
 
     return products;
+}
+
+
+export function isWithinFunctioningHours(){
+    const now = moment();
+
+    return (
+        now.diff(moment().set("hour", 9).set("minute", 0), "minutes") >= 0 && 
+        now.diff(moment().set("hour", 21).set("minute", 0), "minutes") <= 0
+    );
 }

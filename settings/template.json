@@ -1,5 +1,6 @@
 {
     "proxySettings" : {
+        "protocol": "",
         "host" : "",
         "username" : "",
         "password" : ""
