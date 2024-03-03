@@ -134,3 +134,5 @@ settings/production.json
 experiments/*
 fixtures/*
 logfiles/*
+targets/*
+!targets/example.json

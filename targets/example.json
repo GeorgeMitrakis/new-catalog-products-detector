@@ -1,0 +1,20 @@
+{
+    "origin" : "https://example.com",
+    "pathnames" : [
+        {
+            "pathname": "/example1/list",
+            "requestsPerHour": 1
+        },
+        {
+            "pathname": "/example2/list",
+            "requestsPerHour": 1
+        }
+    ],
+    "useProxy": false,
+    "catalogPageSelectors": {
+        "product" : "article",
+        "productTitle" : "div.title",
+        "productPrice" : "div.price",
+        "productPathname" : "a.link"
+    }
+}
