@@ -1,63 +1,10 @@
-import { Settings } from "./settings";
+import settings from "./settings";
 import type { IProduct } from "./model";
 import jsdom from "jsdom";
 import moment from "moment";
+import type { ICatalogPageSelectors } from "./targets";
 const { JSDOM } = jsdom;
 
-export async function getCatalogPage(url: string): Promise<string|null> {
-
-    const { protocol, host, username, password } = new Settings().getSettings().proxySettings;
-
-    const response = await fetch(url, {
-        proxy: `${protocol}://${username}:${password}@${host}`,
-        verbose: true
-    });
-
-    if(!response.ok){
-        console.error(response.status);
-        return '';
-    }
-
-    const html = await response.text(); // HTML string
-
-    return html;
-}
-
-
-export function createCatalogObject({
-    catalogPageHtml,
-    origin,
-    productSelector,
-    productTitleSelector,
-    productPriceSelector,
-    productPathnameSelector
-}:{
-    catalogPageHtml: string,
-    origin: string,
-    productSelector: string,
-    productTitleSelector : string,
-    productPriceSelector : string,
-    productPathnameSelector : string
-}){
-    const dom = new JSDOM(catalogPageHtml);
-    const document = dom.window.document;
-
-    const productsElements = document.querySelectorAll<HTMLElement>(productSelector);
-
-    const products : IProduct[] = Array.from(productsElements).map((productElem) => {
-        const title = productElem.querySelector(productTitleSelector)?.textContent || "";
-        const price = productElem.querySelector(productPriceSelector)?.textContent || "";
-        const pathname = productElem.querySelector(productPathnameSelector)?.getAttribute("href") || "";
-        
-        return {
-            name: title,
-            price,
-            link: `${origin}${pathname}`,
-        }
-    });
-
-    return products;
-}
 
 
 export function isWithinFunctioningHours(){
@@ -67,4 +14,13 @@ export function isWithinFunctioningHours(){
         now.diff(moment().set("hour", 9).set("minute", 0), "minutes") >= 0 && 
         now.diff(moment().set("hour", 21).set("minute", 0), "minutes") <= 0
     );
+}
+
+export function getNewEntries(source: IProduct[], target: IProduct[]) {
+    const sourceLinks = source.map((product) => product.link);
+    const targetLinks = target.map((product) => product.link);
+
+    const newLinks = targetLinks.filter((link) => !sourceLinks.includes(link));
+
+    return target.filter(product => newLinks.includes(product.link));
 }

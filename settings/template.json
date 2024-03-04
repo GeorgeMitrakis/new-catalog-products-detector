@@ -1,5 +1,5 @@
 {
-    "proxySettings" : {
+    "proxy" : {
         "protocol": "",
         "host" : "",
         "username" : "",

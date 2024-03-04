@@ -1,12 +1,12 @@
 {
     "origin" : "https://example.com",
-    "pathnames" : [
+    "catalogs" : [
         {
-            "pathname": "/example1/list",
+            "url": "https://example.com/example1/list",
             "requestsPerHour": 1
         },
         {
-            "pathname": "/example2/list",
+            "url": "https://example.com/example2/list",
             "requestsPerHour": 1
         }
     ],
@@ -16,5 +16,9 @@
         "productTitle" : "div.title",
         "productPrice" : "div.price",
         "productPathname" : "a.link"
+    },
+    "telegram" : {
+        "botToken": "",
+        "chatId": 0
     }
 }

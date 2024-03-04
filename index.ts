@@ -2,75 +2,74 @@
 import moment from "moment";
 import { DEFAULT_TIME_INTERVAL } from "./app/const";
 import type { ICatalog, IProduct } from "./app/model";
-import { createCatalogObject, getCatalogPage, isWithinFunctioningHours } from "./app/utils";
+import {  getNewEntries, isWithinFunctioningHours } from "./app/utils";
+import { TargetsSet, type ICatalogPageSelectors, type ITarget, type ITargetCatalog } from "./app/targets";
+import { crawlCatalog } from "./app/crawler";
+import { NotificationsHandler } from "./app/notifications";
 
-const origin = "https://www.spitogatos.gr"
-const url = `${origin}/pwliseis-katoikies/athina-voreia-proastia/timi_eos-200000/emvado_apo-65`;
 
-const productSelector = "article";
-const productTitleSelector = ".tile__title";
-const productPriceSelector = ".price__text";
-const productPathnameSelector = ".tile__content  a.tile__link";
-
-let previousCatalog: IProduct[] = [];
 
 async function run(){    
-    if(!isWithinFunctioningHours()){
-        console.log("Outside functioning hours. Skipping.")
-        return;
-    }
-
-    const newEntries = await crawlCatalog();
-
-    if(newEntries.length > 0){
-        const date = moment().format("YYYY-MM-DD");
-        const time = moment().format("HH:mm");
-
-
-        console.log(JSON.stringify(newEntries, null, 4));
-        logToFile(newEntries, date, time);
-    }
-}
-
-async function crawlCatalog() {
-    const catalogPageHtml = await getCatalogPage(url);
-    // const catalogPageHtml = await Bun.file('./test.html').text();
-
-    if(!catalogPageHtml){
-        return [];
-    }
-
-    // if(!await Bun.file('./fixtures/catalog.json').exists()){
-    //     await Bun.write('./fixtures/catalog.json', '[]');
+    // if(!isWithinFunctioningHours()){
+    //     console.log("Outside functioning hours. Skipping.")
+    //     return;
     // }
 
-    // previousCatalog = JSON.parse(await Bun.file('./fixtures/catalog.json').text());
-
-    const newCatalog = createCatalogObject({
-        catalogPageHtml,
-        origin,
-        productSelector,
-        productTitleSelector,
-        productPriceSelector,
-        productPathnameSelector
-    })
-
-    // const newCatalog = JSON.parse(await Bun.file('./catalog.json').text());
-    previousCatalog = newCatalog;
-
-    // await Bun.write('./fixtures/catalog.json', JSON.stringify(newCatalog, null, 4));
-    // await Bun.write('./fixtures/catalog.html', catalogPageHtml);
-
-    return getNewEntries(previousCatalog, newCatalog);
+    const targets = await new TargetsSet().init();
+    
+    for (const target of targets) {
+        await handleTarget(target);
+    }
 }
 
-function getNewEntries(source: IProduct[], target: IProduct[]) {
-    const sourceLinks = source.map((product) => product.link);
-    const targetLinks = target.map((product) => product.link);
+async function handleTarget(target: ITarget){
 
-    const newLinks = targetLinks.filter((link) => !sourceLinks.includes(link));
+    const notificationsHandler = new NotificationsHandler(target.telegram.botToken, target.telegram.chatId);
 
-    return target.filter(product => newLinks.includes(product.link));
+    for (const catalog of target.catalogs) {
+        const intervalDurationInMinutes = 60 / catalog.requestsPerHour;
+        let previousCatalog: IProduct[] = [];
+        
+        const interval = setInterval(
+            async () => {
+                const newCatalog = await crawlCatalog(catalog, target.catalogPageSelectors, target.origin, target.useProxy);
+
+                const newEntries = getNewEntries(previousCatalog, newCatalog);
+
+                // console.log({
+                //     newCatalog : newCatalog.length,
+                //     newEntries : newEntries.length,
+                //     previousCatalog : previousCatalog.length
+                // })
+                
+                if(newEntries.length > 0){
+                    const date = moment().format("YYYY-MM-DD");
+                    const time = moment().format("HH:mm");
+            
+            
+                    console.log(JSON.stringify(newEntries, null, 4));
+                    await logToFile(newEntries, date, time);
+
+                    let message = `${catalog.url}\n`;
+
+                    for (const newEntry of newEntries) {
+                        message += `    ${newEntry.name}\n`;
+                        message += `    ${newEntry.price}\n`;
+                        message += `    ${newEntry.link}\n\n`;
+                    }
+
+
+                    await notificationsHandler.send(message);
+                }
+
+                previousCatalog = newCatalog;
+            }, 
+            intervalDurationInMinutes * 60 * 1000
+        )
+
+        console.log(`Interval #${interval} for ${catalog.url} has started. Duration: ${intervalDurationInMinutes} minutes.`)
+    }
+
 }
 
 async function logToFile(products: IProduct[], filename: string, heading: string) {
@@ -88,6 +87,4 @@ async function logToFile(products: IProduct[], filename: string, heading: string
     writer.end();
 }
 
-
-const searchInterval = setInterval(run, DEFAULT_TIME_INTERVAL * 1000);
 run();

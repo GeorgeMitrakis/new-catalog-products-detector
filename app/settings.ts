@@ -1,17 +1,28 @@
-import settings from '../settings/production.json' assert { type: 'json' }
+interface ISettings {
+    proxy : {
+        protocol: string,
+        host : string,
+        username : string,
+        password : string
+    }
+}
 
-export class Settings{
+class SettingsProvider {
 
-    private _settings : typeof settings | null = null;
+    private _settings : ISettings | null = null;
         
     constructor(){ }
 
     getSettings() {
         if(!this._settings){
-            this._settings = settings;
+            this._settings = require('../settings/production.json');
         }
 
-        return this._settings;
+        return this._settings!;
     }
 }
+
+const settings = new SettingsProvider();
+
+export default settings;
 
