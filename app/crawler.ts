@@ -10,7 +10,7 @@ export async function crawlCatalog(catalog: ITargetCatalog, selectors: ICatalogP
     // const catalogPageHtml = await Bun.file('./test.html').text();
 
     if(!catalogPageHtml){
-        return [];
+        throw new Error("Empty page");
     }
 
     // if(!await Bun.file('./fixtures/catalog.json').exists()){
@@ -45,8 +45,7 @@ async function getCatalogPage(url: string, useProxy: boolean = false): Promise<s
     const response = await fetch(url, fetchOptions);
 
     if(!response.ok){
-        console.error(response.status);
-        return '';
+        throw new Error(response.statusText);
     }
 
     const html = await response.text(); // HTML string

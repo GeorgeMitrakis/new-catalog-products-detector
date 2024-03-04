@@ -29,40 +29,58 @@ async function handleTarget(target: ITarget){
     for (const catalog of target.catalogs) {
         const intervalDurationInMinutes = 60 / catalog.requestsPerHour;
         let previousCatalog: IProduct[] = [];
+        let intervalIteration = 0;
+        let iterationRunning = false;
         
         const interval = setInterval(
             async () => {
-                const newCatalog = await crawlCatalog(catalog, target.catalogPageSelectors, target.origin, target.useProxy);
+                try {
+                    intervalIteration++;
 
-                const newEntries = getNewEntries(previousCatalog, newCatalog);
+                    console.log(`Interval #${interval}, Iteration #${intervalIteration}`);
 
-                // console.log({
-                //     newCatalog : newCatalog.length,
-                //     newEntries : newEntries.length,
-                //     previousCatalog : previousCatalog.length
-                // })
-                
-                if(newEntries.length > 0){
-                    const date = moment().format("YYYY-MM-DD");
-                    const time = moment().format("HH:mm");
-            
-            
-                    console.log(JSON.stringify(newEntries, null, 4));
-                    await logToFile(newEntries, date, time);
-
-                    let message = `${catalog.url}\n`;
-
-                    for (const newEntry of newEntries) {
-                        message += `    ${newEntry.name}\n`;
-                        message += `    ${newEntry.price}\n`;
-                        message += `    ${newEntry.link}\n\n`;
+                    if(iterationRunning){
+                        throw new Error("Another iteration is already running.");
                     }
 
+                    iterationRunning = true;
 
-                    await notificationsHandler.send(message);
+                    if(!isWithinFunctioningHours()){
+                        throw new Error("Outside functioning hours. Skipping.");
+                    }
+
+                    console.time(`crawling_timer_${interval}_${intervalIteration}`);
+                    const newCatalog = await crawlCatalog(catalog, target.catalogPageSelectors, target.origin, target.useProxy);
+                    console.timeEnd(`crawling_timer_${interval}_${intervalIteration}`);
+
+                    const newEntries = getNewEntries(previousCatalog, newCatalog);
+                    
+                    if(previousCatalog.length > 0 && newEntries.length > 0){
+                        const date = moment().format("YYYY-MM-DD");
+                        const time = moment().format("HH:mm");
+                
+                
+                        console.log(JSON.stringify(newEntries, null, 4));
+                        await logToFile(newEntries, date, time);
+    
+                        let message = `${catalog.url}\n`;
+    
+                        for (const newEntry of newEntries) {
+                            message += `    ${newEntry.name}\n`;
+                            message += `    ${newEntry.price}\n`;
+                            message += `    ${newEntry.link}\n\n`;
+                        }
+    
+    
+                        await notificationsHandler.send(message);
+                    }
+    
+                    previousCatalog = newCatalog;
+                } catch (error) {
+                    console.log(error);
+                } finally {
+                    iterationRunning = false;
                 }
-
-                previousCatalog = newCatalog;
             }, 
             intervalDurationInMinutes * 60 * 1000
         )
