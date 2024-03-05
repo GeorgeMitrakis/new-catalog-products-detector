@@ -10,7 +10,6 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "antibotbrowser": "^1.0.5",
     "grammy": "^1.21.1",
     "jsdom": "^24.0.0",
     "lodash": "^4.17.21",
