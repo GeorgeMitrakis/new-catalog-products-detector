@@ -1,5 +1,4 @@
 import { Bot } from "grammy";
-import type { ParseMode } from "grammy/types";
 
 export class NotificationsHandler {
     private _bot;
