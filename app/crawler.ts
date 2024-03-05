@@ -42,17 +42,20 @@ function createCatalogObject( catalogPageHtml: string, origin: string, selectors
     const dom = new JSDOM(catalogPageHtml);
     const document = dom.window.document;
 
+    const catalogName = document.querySelector(selectors.catalog)?.textContent || "";
+
     const productsElements = document.querySelectorAll<HTMLElement>(selectors.product);
 
     const products : IProduct[] = Array.from(productsElements).map((productElem) => {
-        const title = productElem.querySelector(selectors.productTitle)?.textContent || "";
+        const name = productElem.querySelector(selectors.productTitle)?.textContent || "";
         const price = productElem.querySelector(selectors.productPrice)?.textContent || "";
         const pathname = productElem.querySelector(selectors.productPathname)?.getAttribute("href") || "";
         
         return {
-            name: title,
+            name,
             price,
             link: `${origin}${pathname}`,
+            catalogName
         }
     });
 

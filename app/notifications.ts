@@ -10,6 +10,6 @@ export class NotificationsHandler {
     }
 
     async send(message: string){
-        return await this._bot.api.sendMessage(this._chat_id, message);
+        return await this._bot.api.sendMessage(this._chat_id, message, {parse_mode: "HTML"});
     }
 }

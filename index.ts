@@ -28,13 +28,21 @@ async function handleTarget(target: ITarget){
 }
 
 async function notifyAboutNewEntries(catalog:ITargetCatalog, newEntries: IProduct[], notificationsHandler: NotificationsHandler){
-    let message = `${catalog.url}\n`;
+    let messageList = ``;
+
+    // catalog name remains the same for each entry
+    let messageEmojiHtml = "";
+    if(!!catalog.productEmoji && !!catalog.productEmojiId){
+        messageEmojiHtml = `<tg-emoji emoji-id="4909228789914927963">🏠</tg-emoji> `;
+    }
 
     for (const newEntry of newEntries) {
-        message += `    ${newEntry.name}\n`;
-        message += `    ${newEntry.price}\n`;
-        message += `    ${newEntry.link}\n\n`;
+        messageList += `\n${messageEmojiHtml || "-"}  ${newEntry.name}, ${newEntry.price}: <a href="${newEntry.link}">${newEntry.link}</a>\n`;
     }
+
+    let messageTitle = `<strong>${newEntries[0].catalogName}</strong>`;
+
+    let message = `${messageTitle} (<a href="${catalog.url}">link</a>)\n${messageList}`
 
     await notificationsHandler.send(message);
 }

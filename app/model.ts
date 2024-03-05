@@ -1,4 +1,5 @@
 export interface IProduct {
+    catalogName: string;
     name: string;
     price: string;
     link: string;
