@@ -16,7 +16,7 @@ async function handleTarget(target: ITarget){
     const notificationsHandler = new NotificationsHandler(target.telegram.botToken, target.telegram.chatId);
 
     for (const catalog of target.catalogs) {
-        handleCatalog(
+        await handleCatalog(
             target, 
             catalog, 
             async (newEntries: IProduct[]) => {

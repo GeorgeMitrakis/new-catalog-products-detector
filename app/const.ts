@@ -1,1 +1,1 @@
-export const DEFAULT_TIME_INTERVAL = 60; // in minutes
+export const STORED_CATALOGS_PATH = "data/catalogs";

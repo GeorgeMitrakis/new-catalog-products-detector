@@ -133,6 +133,6 @@ dist
 settings/production.json
 experiments/*
 fixtures/*
-logfiles/*
+data/*
 targets/*
 !targets/example.json

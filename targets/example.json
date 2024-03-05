@@ -1,11 +1,14 @@
 {
+    "name": "example",
     "origin" : "https://example.com",
     "catalogs" : [
         {
+            "name": "voreia-proastia-agora",
             "url": "https://example.com/example1/list",
             "requestsPerHour": 1
         },
         {
+            "name": "voreia-proastia-pwlhsh",
             "url": "https://example.com/example2/list",
             "requestsPerHour": 1
         }

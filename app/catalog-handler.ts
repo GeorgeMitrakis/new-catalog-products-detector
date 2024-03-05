@@ -2,12 +2,16 @@ import moment from "moment";
 import { crawlCatalog } from "./crawler";
 import type { IProduct } from "./model";
 import type { ITarget, ITargetCatalog } from "./targets";
+import { getArrayWithoutElem } from "./utils";
+import { DataStorageManager } from "./data-storage-manager";
 
-export function handleCatalog(target: ITarget, catalog: ITargetCatalog, newEntriesFoundCallback: Function){
+export async function handleCatalog(target: ITarget, catalog: ITargetCatalog, newEntriesFoundCallback: Function){
     const intervalDurationInMinutes = 60 / catalog.requestsPerHour;
-    let previousCatalog: IProduct[] = [];
+    const _dataStorageManager = new DataStorageManager(target.name, catalog.name);
+
+    let previousCatalog: IProduct[] = await _dataStorageManager.loadCatalog();
     let intervalIteration = 0;
-    let iterationRunning = false;
+    let iterationsRunning: number[] = [];
     
     const interval = setInterval(
         async () => {
@@ -16,11 +20,11 @@ export function handleCatalog(target: ITarget, catalog: ITargetCatalog, newEntri
 
                 console.log(`Interval #${interval}, Iteration #${intervalIteration}`);
 
-                if(iterationRunning){
+                if(iterationsRunning.length){
                     throw new Error("Another iteration is already running.");
                 }
 
-                iterationRunning = true;
+                iterationsRunning.push(intervalIteration);
 
                 if(!isWithinFunctioningHours()){
                     throw new Error("Outside functioning hours. Skipping.");
@@ -37,10 +41,11 @@ export function handleCatalog(target: ITarget, catalog: ITargetCatalog, newEntri
                 }
 
                 previousCatalog = newCatalog;
+                await _dataStorageManager.storeCatalog(newCatalog);
             } catch (error) {
                 console.log(error);
             } finally {
-                iterationRunning = false;
+                iterationsRunning = getArrayWithoutElem(intervalIteration, iterationsRunning);
             }
         }, 
         intervalDurationInMinutes * 60 * 1000

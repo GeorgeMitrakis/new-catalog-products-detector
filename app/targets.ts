@@ -1,6 +1,7 @@
 import { Glob } from "bun";
 
 export interface ITargetCatalog {
+    name: string,
     url : string,
     requestsPerHour : number
 }
@@ -13,6 +14,7 @@ export interface ICatalogPageSelectors {
 }
 
 export interface ITarget {
+    name: string;
     origin : string,
     catalogs : ITargetCatalog[],
     useProxy : boolean,
