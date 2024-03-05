@@ -13,7 +13,7 @@ export interface ICatalogPageSelectors {
     product : string;
     productTitle : string;
     productPrice : string;
-    productPathname : string;
+    productHref : string;
 }
 
 export interface ITarget {

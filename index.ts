@@ -2,6 +2,7 @@ import type { IProduct } from "./app/model";
 import { TargetsSet, type ITarget, type ITargetCatalog } from "./app/targets";
 import { NotificationsHandler } from "./app/notifications";
 import { handleCatalog } from "./app/catalog-handler";
+import { PRODUCT_LINK_TEXT_MAX_CHARACTERS } from "./app/const";
 
 async function run(){
     const targets = await new TargetsSet().init();
@@ -37,7 +38,11 @@ async function notifyAboutNewEntries(catalog:ITargetCatalog, newEntries: IProduc
     }
 
     for (const newEntry of newEntries) {
-        messageList += `\n${messageEmojiHtml || "-"}  ${newEntry.name}, ${newEntry.price}: <a href="${newEntry.link}">${newEntry.link}</a>\n`;
+        const linkText = newEntry.link.length > PRODUCT_LINK_TEXT_MAX_CHARACTERS ? 
+            newEntry.link.substring(0, PRODUCT_LINK_TEXT_MAX_CHARACTERS) + "..." : 
+            newEntry.link;
+        
+        messageList += `\n${messageEmojiHtml || "-"}  ${newEntry.name}, ${newEntry.price}: <a href="${newEntry.link}">${linkText}</a>\n`;
     }
 
     let messageTitle = `<strong>${newEntries[0].catalogName}</strong>`;

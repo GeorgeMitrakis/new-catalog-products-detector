@@ -49,12 +49,17 @@ function createCatalogObject( catalogPageHtml: string, origin: string, selectors
     const products : IProduct[] = Array.from(productsElements).map((productElem) => {
         const name = productElem.querySelector(selectors.productTitle)?.textContent || "";
         const price = productElem.querySelector(selectors.productPrice)?.textContent || "";
-        const pathname = productElem.querySelector(selectors.productPathname)?.getAttribute("href") || "";
+        const href = productElem.querySelector(selectors.productHref)?.getAttribute("href") || "";
+
+        let link = href;
+        if(!href.startsWith("http")){
+            link = `${origin}${href}`;
+        }
         
         return {
             name,
             price,
-            link: `${origin}${pathname}`,
+            link,
             catalogName
         }
     });

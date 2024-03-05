@@ -23,7 +23,7 @@
         "product" : "article",
         "productTitle" : "div.title",
         "productPrice" : "div.price",
-        "productPathname" : "a.link"
+        "productHref" : "a.link"
     },
     "telegram" : {
         "botToken": "",
