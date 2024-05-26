@@ -67,7 +67,7 @@ function isWithinFunctioningHours(){
     const now = moment();
 
     return (
-        now.diff(moment().set("hour", 9).set("minute", 0), "minutes") >= 0 && 
-        now.diff(moment().set("hour", 21).set("minute", 0), "minutes") <= 0
+        now.diff(moment().set("hour", 7).set("minute", 0), "minutes") >= 0 && 
+        now.diff(moment().set("hour", 23).set("minute", 0), "minutes") <= 0
     );
 }
