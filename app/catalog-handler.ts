@@ -36,7 +36,7 @@ export async function handleCatalog(target: ITarget, catalog: ITargetCatalog, ne
 
                 const newEntries = getNewEntries(previousCatalog, newCatalog);
                 
-                if(previousCatalog.length > 0 && newEntries.length > 0){
+                if(newEntries.length > 0){
                     await newEntriesFoundCallback(newEntries);
                 }
 
