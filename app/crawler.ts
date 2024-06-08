@@ -51,7 +51,8 @@ function createCatalogObject( catalogPageHtml: string, origin: string, selectors
         const price = productElem.querySelector(selectors.productPrice)?.textContent || "";
         const href = productElem.querySelector(selectors.productHref)?.getAttribute("href") || "";
 
-        let link = href;
+        let link = href.split('?')[0];  // omit querystring if any
+
         if(!href.startsWith("http")){
             link = `${origin}${href}`;
         }
