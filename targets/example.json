@@ -7,14 +7,16 @@
             "url": "https://example.com/example1/list",
             "requestsPerHour": 1,
             "productEmoji": "🏠",
-            "productEmojiId": "4909228789914927963"
+            "productEmojiId": "4909228789914927963",
+            "chatId": 0
         },
         {
             "name": "voreia-proastia-pwlhsh",
             "url": "https://example.com/example2/list",
             "requestsPerHour": 1,
             "productEmoji": "🏠",
-            "productEmojiId": "4909228789914927963"
+            "productEmojiId": "4909228789914927963",
+            "chatId": 0
         }
     ],
     "useProxy": false,
@@ -26,7 +28,6 @@
         "productHref" : "a.link"
     },
     "telegram" : {
-        "botToken": "",
-        "chatId": 0
+        "botToken": ""
     }
 }

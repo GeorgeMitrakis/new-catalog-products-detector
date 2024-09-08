@@ -14,7 +14,7 @@ async function run(){
 
 async function handleTarget(target: ITarget){
 
-    const notificationsHandler = new NotificationsHandler(target.telegram.botToken, target.telegram.chatId);
+    const notificationsHandler = new NotificationsHandler(target.telegram.botToken);
 
     for (const catalog of target.catalogs) {
         await handleCatalog(
@@ -49,7 +49,7 @@ async function notifyAboutNewEntries(catalog:ITargetCatalog, newEntries: IProduc
 
     let message = `${messageTitle} (<a href="${catalog.url}">link</a>)\n${messageList}`
 
-    await notificationsHandler.send(message);
+    await notificationsHandler.send(catalog.chatId, message);
 }
 
 run();

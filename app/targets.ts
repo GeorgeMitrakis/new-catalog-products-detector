@@ -6,6 +6,7 @@ export interface ITargetCatalog {
     requestsPerHour : number;
     productEmoji: string;
     productEmojiId: string;
+    chatId: string | number;
 }
 
 export interface ICatalogPageSelectors {
@@ -23,8 +24,7 @@ export interface ITarget {
     useProxy : boolean;
     catalogPageSelectors: ICatalogPageSelectors;
     telegram : {
-        botToken: string,
-        chatId: string | number
+        botToken: string
     };
 }
 
