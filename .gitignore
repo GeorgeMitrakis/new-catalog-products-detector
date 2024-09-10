@@ -136,3 +136,5 @@ fixtures/*
 data/*
 targets/*
 !targets/example.json
+
+ca.crt
