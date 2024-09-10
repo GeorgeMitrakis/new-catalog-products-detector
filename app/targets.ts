@@ -37,6 +37,8 @@ export class TargetsSet {
         const glob = new Glob(`${targetsPath}/*`);
 
         for (const targetFile of glob.scanSync(".")) {
+            if(targetFile.includes("example")) continue;
+            
             const targetName = targetFile.replace(targetsPath, "").replace(".json", "");
             
             if(targetName === "example"){
