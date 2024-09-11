@@ -23,7 +23,7 @@ async function getCatalogPage(url: string, useProxy: boolean = false): Promise<s
     let fetchOptions: FetchRequestInit = { verbose: true };
 
     if(useProxy){
-        fetchOptions = { ...fetchOptions, proxy: `${protocol}://${username}:${password}@${host}` };
+        fetchOptions = { ...fetchOptions, proxy: `${protocol}://${username}:${password}@${host}`, tls: { rejectUnauthorized: false } };
     }
 
     const response = await fetch(url, fetchOptions);
