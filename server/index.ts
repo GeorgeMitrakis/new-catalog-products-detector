@@ -1,8 +1,8 @@
-import type { IProduct } from "./app/model";
-import { TargetsSet, type ITarget, type ITargetCatalog } from "./app/targets";
-import { NotificationsHandler } from "./app/notifications";
-import { handleCatalog } from "./app/catalog-handler";
-import { PRODUCT_LINK_TEXT_MAX_CHARACTERS } from "./app/const";
+import type { IProduct } from "./src/model";
+import { TargetsSet, type ITarget, type ITargetCatalog } from "./src/targets";
+import { NotificationsHandler } from "./src/notifications";
+import { handleCatalog } from "./src/catalog-handler";
+import { PRODUCT_LINK_TEXT_MAX_CHARACTERS } from "./src/const";
 
 async function run(){
     const targets = await new TargetsSet().init();
