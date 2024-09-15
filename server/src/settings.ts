@@ -4,6 +4,13 @@ interface ISettings {
         host : string,
         username : string,
         password : string
+    },
+    database : {
+        protocol: string,
+        username : string,
+        password : string,
+        host : string,
+        appName: string
     }
 }
 

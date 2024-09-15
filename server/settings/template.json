@@ -4,5 +4,12 @@
         "host" : "",
         "username" : "",
         "password" : ""
+    },
+    "database" : {
+        "protocol": "",
+        "username" : "",
+        "password" : "",
+        "host" : "",
+        "appName": ""
     }
 }
