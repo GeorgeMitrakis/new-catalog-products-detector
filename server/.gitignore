@@ -138,3 +138,5 @@ targets/*
 !targets/example.json
 
 ca.crt
+
+dbsettings.json
